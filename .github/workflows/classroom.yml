@@ -1,0 +1,90 @@
+# GitHub Classroom-ийн автомат үнэлгээ.
+# Оюутан push хийх бүрт lab1_dart-ийн тестийг ажиллуулж, оноог Classroom-д илгээнэ.
+# Оноо = тухайн бүлгийн тестийн тоо (бүлэг бүх тест нь давсан үед л оноо авна). Нийт 25.
+# Энэ файлыг оюутан өөрчлөхгүй (Classroom-д "Protected file paths" болгоно).
+
+name: Autograding Tests
+on:
+  - push
+  - repository_dispatch
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Install packages
+        run: dart pub get
+        working-directory: lab1_dart
+
+      - name: "Lab 1 · 1. Үндэс"
+        id: basics
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: "Lab 1 · 1. Үндэс"
+          setup-command: ""
+          command: cd lab1_dart && dart test test/lab1_test.dart --name "1. Үндэс"
+          timeout: 5
+          max-score: 5
+
+      - name: "Lab 1 · 2. Product"
+        id: product
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: "Lab 1 · 2. Product"
+          setup-command: ""
+          command: cd lab1_dart && dart test test/lab1_test.dart --name "2. Product"
+          timeout: 5
+          max-score: 7
+
+      - name: "Lab 1 · 3. Cart"
+        id: cart
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: "Lab 1 · 3. Cart"
+          setup-command: ""
+          command: cd lab1_dart && dart test test/lab1_test.dart --name "3. Cart"
+          timeout: 5
+          max-score: 6
+
+      - name: "Lab 1 · 4. OrderStatus"
+        id: orderstatus
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: "Lab 1 · 4. OrderStatus"
+          setup-command: ""
+          command: cd lab1_dart && dart test test/lab1_test.dart --name "4. OrderStatus"
+          timeout: 5
+          max-score: 2
+
+      - name: "Lab 1 · 5. Async"
+        id: async
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: "Lab 1 · 5. Async"
+          setup-command: ""
+          command: cd lab1_dart && dart test test/lab1_test.dart --name "5. Async"
+          timeout: 5
+          max-score: 5
+
+      - name: Autograding Reporter
+        uses: classroom-resources/autograding-grading-reporter@v1
+        env:
+          BASICS_RESULTS: "${{ steps.basics.outputs.result }}"
+          PRODUCT_RESULTS: "${{ steps.product.outputs.result }}"
+          CART_RESULTS: "${{ steps.cart.outputs.result }}"
+          ORDERSTATUS_RESULTS: "${{ steps.orderstatus.outputs.result }}"
+          ASYNC_RESULTS: "${{ steps.async.outputs.result }}"
+        with:
+          runners: basics,product,cart,orderstatus,async
